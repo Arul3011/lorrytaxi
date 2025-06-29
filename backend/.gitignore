@@ -1,0 +1,21 @@
+
+node_modules/
+.env
+dist/
+build/
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# Testing
+coverage/
+jest-cache/
+
+/generated/prisma

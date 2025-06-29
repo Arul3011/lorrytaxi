@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String   @id
+  name      String
+  email     String   @unique
+  phone     String   @unique
+  role      Role     @default(CONSUMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lorries    Lorry[]
+  bookings   Booking[]               @relation("ConsumerBookings")   // As consumer
+  drivenBookings Booking[]           @relation("DriverBookings")     // As driver
+  queries    Query[]                 @relation("ClientQueries")
+  responses  QueryResponse[]         @relation("DriverResponses")
+}
+
+
+enum Role {
+  CONSUMER
+  DRIVER
+  ADMIN
+}
+model Query {
+  id          String       @id @default(uuid())
+  from        String
+  fromLat     Float
+  fromLng     Float
+  to          String
+  toLat       Float
+  toLng       Float
+  weight      Float
+  status      QueryStatus  @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  client      User         @relation(name: "ClientQueries", fields: [clientId], references: [id])
+  clientId    String
+
+  responses   QueryResponse[]
+  booking     Booking?     // 👈 Add this (optional because query may not be booked yet)
+}
+
+enum QueryStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+model Lorry {
+  id          String   @id @default(uuid())
+  plateNumber String   @unique
+  type        String
+  capacity    Float
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  driver      User     @relation(fields: [driverId], references: [id])
+  driverId    String
+
+  bookings    Booking[]
+  availability LorryAvailability? // 👈 Add this line
+}
+
+model Booking {
+  id           String         @id @default(uuid())
+  query        Query          @relation(fields: [queryId], references: [id])
+  queryId      String         @unique
+
+  consumer     User           @relation(name: "ConsumerBookings", fields: [consumerId], references: [id])
+  consumerId   String
+
+  driver       User           @relation(name: "DriverBookings", fields: [driverId], references: [id])
+  driverId     String
+
+  lorry        Lorry          @relation(fields: [lorryId], references: [id])
+  lorryId      String
+
+  currentLat   Float?
+  currentLng   Float?
+  routePath    Json?
+  status       BookingStatus  @default(ONGOING)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+
+enum BookingStatus {
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model QueryResponse {
+  id        String   @id @default(uuid())
+  message   String
+  query     Query    @relation(fields: [queryId], references: [id])
+  queryId   String
+  driver    User     @relation(name: "DriverResponses", fields: [driverId], references: [id])
+  driverId  String
+  createdAt DateTime @default(now())
+}
+model LorryAvailability {
+  id        String   @id @default(uuid())
+  lorry     Lorry    @relation(fields: [lorryId], references: [id])
+  lorryId   String   @unique
+
+  isOnline  Boolean  @default(false)
+  lat       Float?
+  lng       Float?
+
+  updatedAt DateTime @updatedAt
+}
+
