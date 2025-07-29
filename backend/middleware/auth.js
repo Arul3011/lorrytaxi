@@ -1,5 +1,5 @@
 // middleware/firebaseAuth.js
-const admin = require("firebase-admin");
+const admin = require("../firebase/firebase");
 
 async function authenticateFirebaseToken(req, res, next) {
   const authHeader = req.headers.authorization;

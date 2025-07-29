@@ -19,3 +19,8 @@ coverage/
 jest-cache/
 
 /generated/prisma
+
+/generated/prisma
+
+/lib/generated/prisma
+firebase/lorry-taxi-firebase-adminsdk-fbsvc-9d521c8aa2.json

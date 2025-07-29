@@ -29,15 +29,13 @@ enum Role {
   DRIVER
   ADMIN
 }
+
 model Query {
   id          String       @id @default(uuid())
-  from        String
-  fromLat     Float
-  fromLng     Float
-  to          String
-  toLat       Float
-  toLng       Float
+  from        String[]     // [lat, lng] as strings
+  to          String[]     // [lat, lng] as strings
   weight      Float
+  routePath   Json?    // route points like ["lat,lng", "lat,lng"]
   status      QueryStatus  @default(PENDING)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -46,8 +44,9 @@ model Query {
   clientId    String
 
   responses   QueryResponse[]
-  booking     Booking?     // 👈 Add this (optional because query may not be booked yet)
+  booking     Booking?
 }
+
 
 enum QueryStatus {
   PENDING
@@ -70,6 +69,8 @@ model Lorry {
   bookings    Booking[]
   availability LorryAvailability? // 👈 Add this line
 }
+
+
 
 model Booking {
   id           String         @id @default(uuid())
@@ -102,6 +103,7 @@ enum BookingStatus {
 }
 
 model QueryResponse {
+  
   id        String   @id @default(uuid())
   message   String
   query     Query    @relation(fields: [queryId], references: [id])
@@ -110,6 +112,7 @@ model QueryResponse {
   driverId  String
   createdAt DateTime @default(now())
 }
+
 model LorryAvailability {
   id        String   @id @default(uuid())
   lorry     Lorry    @relation(fields: [lorryId], references: [id])
