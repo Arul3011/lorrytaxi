@@ -1,26 +1,38 @@
 import type React from "react"
-// import img from "./";
+import Navbar from "../compounts/Navbar";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 type dashbordprop = {
 
 }
 const Dashbord : React.FC<dashbordprop> =()=>{
-const isDriver : boolean = true; 
+  const [pickup,setPicku] = useState("");
+  const [drop ,setDrop] = useState("");
+  const [weight,setWeight] = useState('');
+  const isLoggedIn = useSelector((state: any) => state.user.isLoggedIn);
+  const handelsubmit = ()=>{
+if(isLoggedIn) {
+  console.log({
+    drop: drop,
+    pickup:pickup,
+    weight : weight,
+    uid : localStorage.getItem("uid")
+  });
+  
+  alert("scucessfully send") 
+  
+}else{
+    alert("login to continue")}
+
+  }
+
+// const isDriver : boolean = true; 
     return(
         <>
 
        <div className="min-h-screen bg-white p-6 md:p-10">
       {/* Navbar */}
-      <header className="flex items-center justify-between mb-10">
-        <div className="flex items-center space-x-2">
-          <span className="text-2xl font-bold">🚚 LORRY TAXI</span>
-        </div>
-        <nav className="hidden md:flex space-x-6 text-lg">
-          <a href="#" className="hover:underline">Home</a>
-          <a href="#" className="hover:underline">Bookings</a>
-          <a href="#" className="hover:underline">Help</a>
-        </nav>
-        <button className="bg-teal-700 text-white px-4 py-2 rounded">Sign in</button>
-      </header>
+     <Navbar />
 
       {/* Booking Section */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -34,6 +46,8 @@ const isDriver : boolean = true;
                 type="text"
                 placeholder="Pickup Location"
                 className="w-full border p-3 rounded"
+                onChange={(e)=>setPicku(e.target.value)}
+                value={pickup}
               />
             </div>
             <div>
@@ -42,6 +56,9 @@ const isDriver : boolean = true;
                 type="text"
                 placeholder="Dropoff Location"
                 className="w-full border p-3 rounded"
+                value={drop}
+                onChange={(e)=>setDrop(e.target.value)}
+
               />
             </div>
             <div>
@@ -50,10 +67,12 @@ const isDriver : boolean = true;
                 type="text"
                 placeholder="Select vehicle"
                 className="w-full border p-3 rounded"
+                onChange={(e)=>setWeight(e.target.value)}
+                value={weight}
               />
             </div>
 
-            <button className="bg-blue-600 text-white w-full py-3 rounded mt-4">Search</button>
+            <button className="bg-blue-600 text-white w-full py-3 rounded mt-4" onClick={handelsubmit}>Search</button>
           </div>
         </div>
 

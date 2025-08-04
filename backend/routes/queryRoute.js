@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 const getcod = async (place) => {
   const apires = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place)}&format=json`, {
     headers: {
-      'User-Agent': 'yourapp@example.com'
+      'User-Agent': 'arul-dev.vercel.app'
     }
   });
   const jdata = await apires.json();
@@ -41,7 +41,8 @@ const getroute = async(start,end)=>{
 router.post('/', async (req, res) => {
   try {
     const { from, to, weight, clientId } = req.body;
-    // const {from , to } = req.params;
+    // console.log(from,to);
+    
 
     const fromc = await getcod(from);
     const toc = await getcod(to);
@@ -67,11 +68,12 @@ const path = await getroute(fromc,toc);
 //     });
 
 
-    return res.status(201).json({ data: {
-    from : fromc,
-    to : toc,
-    route : path
-    }});
+    // return res.status(201).json({ data: {
+    // from : fromc,
+    // to : toc,
+    // route : path
+    // }});
+    res.status(201).json({from ,to ,path});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Failed to create query', error });

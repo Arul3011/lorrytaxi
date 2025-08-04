@@ -1,26 +1,39 @@
 import { useState } from "react";
 import type {FormEvent, JSX} from "react"
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { auth } from "../../lib/firebase";
 import Cookies from "js-cookie";
-// import GoogleLogin from "../compounts/GoogleLogin";
 import toast, { Toaster } from 'react-hot-toast';
 import type { FirebaseError } from "firebase/app";
+import { useDispatch } from "react-redux";
+import { isLogin } from "../../store/slice/login/loginSlice";
+// import { logout } from "./loginSlice";
+
+
 
 function Login(): JSX.Element {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const dispatch = useDispatch();
+
+
   const login = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
         localStorage.setItem("uid",user.uid) 
-
+        localStorage.setItem("role",""); 
       const token: string = await user.getIdToken();
       Cookies.set("token", token);
 
-      toast.success(`✅ Logged in as ${user.email}`);
+      toast.success(`Logged in as ${user.email}`);
+      dispatch(isLogin())
+      
+
+      // dispatch your login action here, e.g.:
+      // dispatch(login({ uid: user.uid, email: user.email }))
+
     } catch (err) {
       const errorCode = (err as FirebaseError).code;
 
