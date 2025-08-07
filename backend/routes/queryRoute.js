@@ -53,27 +53,30 @@ router.post('/', async (req, res) => {
 
   
 const path = await getroute(fromc,toc);
+if(from && to && path){
+try {
+   const newQuery = await prisma.query.create({
+      data: {
+        from: fromc,           // Expecting an array of strings [lat, lng]
+        to: toc,               // Expecting an array of strings [lat, lng]
+        weight: weight,       // Expecting a float
+        routePath: path, // Optional: Expecting JSON or null
+        client: {
+          connect: { id: clientId }, // Connect using clientId (FK to User)
+        },
+        // status, createdAt, and updatedAt are auto-handled
+      }
+    });
+} catch (error) {
+  return res.status(500).json({message : error})
+}
+}else{
+  return res.status(500).json({message :"something went wrong"});
+}
 
-//  const newQuery = await prisma.query.create({
-//       data: {
-//         from,
-//         fromc[0],
-//         fromc[1],
-//         to,
-//         toc[0],
-//         toLng,
-//         weight,
-//         clientId,
-//       }
-//     });
 
 
-    // return res.status(201).json({ data: {
-    // from : fromc,
-    // to : toc,
-    // route : path
-    // }});
-    res.status(201).json({from ,to ,path});
+    res.status(201).json({message : "querry added scucessfully"});
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Failed to create query', error });
